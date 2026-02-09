@@ -2,12 +2,11 @@
 
 public interface IToastService
 {
-    IReadOnlyList<ToastMessage> Items { get; }
     event Action? OnChange;
+    List<ToastMessage> Items { get; }
 
-    void Success(string message, string title = "OK");
-    void Error(string message, string title = "Error");
-    void Info(string message, string title = "Info");
+    void ShowSuccess(string message);
+    void ShowError(string message);
+    void Dismiss(Guid id);
 }
 
-public sealed record ToastMessage(string Css, string Title, string Message);
