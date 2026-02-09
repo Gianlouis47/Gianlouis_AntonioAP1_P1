@@ -1,0 +1,24 @@
+﻿@using Parcial1.Services.Toast
+@inject IToastService Toast
+
+<div class="toast-host">
+    @foreach (var t in Toast.Items)
+    {
+        <div class="toast-item @t.Css">
+            <div class="toast-title">@t.Title</div>
+            <div class="toast-msg">@t.Message</div>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Toast.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        Toast.OnChange -= StateHasChanged;
+    }
+}

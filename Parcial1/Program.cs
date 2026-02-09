@@ -1,10 +1,30 @@
+using Microsoft.EntityFrameworkCore;
 using Parcial1.Components;
+using Parcial1.DAL;
+using Parcial1.Services;
+using Parcial1.Services.Toast;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddDbContextFactory<AppDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddSingleton<IToastService, ToastService>();
+
+
+builder.Services.AddDbContextFactory<AppDbContext>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddScoped<EstudiantesService>();
+
+builder.Services.AddToastServices();
+
+builder.Services.AddSingleton<ToastService>();
+
 
 var app = builder.Build();
 
