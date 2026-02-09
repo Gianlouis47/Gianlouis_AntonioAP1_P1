@@ -5,5 +5,4 @@ using Parcial1.Models;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-   
 }
