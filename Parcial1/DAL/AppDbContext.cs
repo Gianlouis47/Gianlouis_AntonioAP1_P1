@@ -1,8 +1,15 @@
-﻿namespace Parcial1.DAL;
-using Microsoft.EntityFrameworkCore;
-using Parcial1.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Parcial1.Models; 
 
-
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+namespace Parcial1.DAL
 {
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<EntradasHuacales> EntradasHuacales { get; set; }
+    }
 }

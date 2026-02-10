@@ -1,10 +1,9 @@
-﻿namespace Parcial1.Services.Toast;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace Parcial1.Services.Toast;
+
 public static class ToastServiceExtensions
 {
-    public static IServiceCollection AddToastServices(this IServiceCollection services)
-    {
-        services.AddScoped<IToastService, ToastService>();
-        return services;
-    }
+    public static IServiceCollection AddToastService(this IServiceCollection services)
+        => services.AddScoped<IToastService, ToastService>();
 }

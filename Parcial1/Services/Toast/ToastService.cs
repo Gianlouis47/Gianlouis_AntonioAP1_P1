@@ -1,28 +1,34 @@
 ﻿namespace Parcial1.Services.Toast;
 
-public sealed class ToastService : IToastService
+public class ToastService : IToastService
 {
-    private readonly List<ToastMessage> _items = new();
-    public IReadOnlyList<ToastMessage> Items => _items;
-
     public event Action? OnChange;
+    public List<ToastMessage> Items { get; } = new();
 
-    public void Success(string message, string title = "OK") => Add("toast-success", title, message);
-    public void Error(string message, string title = "Error") => Add("toast-error", title, message);
-    public void Info(string message, string title = "Info") => Add("toast-info", title, message);
+    public void ShowSuccess(string message)
+        => Add("Éxito", message, ToastLevel.Success);
 
-    private void Add(string css, string title, string message)
+    public void ShowError(string message)
+        => Add("Error", message, ToastLevel.Error);
+
+    private void Add(string title, string message, ToastLevel level)
     {
-        _items.Add(new ToastMessage(css, title, message));
+        Items.Add(new ToastMessage
+        {
+            Title = title,
+            Message = message,
+            Level = level
+        });
         OnChange?.Invoke();
-        _ = AutoRemoveAsync();
     }
 
-    private async Task AutoRemoveAsync()
+    public void Dismiss(Guid id)
     {
-        await Task.Delay(2800);
-        if (_items.Count == 0) return;
-        _items.RemoveAt(0);
-        OnChange?.Invoke();
+        var toast = Items.FirstOrDefault(x => x.Id == id);
+        if (toast != null)
+        {
+            Items.Remove(toast);
+            OnChange?.Invoke();
+        }
     }
 }

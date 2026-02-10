@@ -1,18 +1,16 @@
 ﻿namespace Parcial1.Services.Toast;
 
-public sealed record ToastMessage(
-    ToastLevel Level,
-    string Title,
-    string Message,
-    int DurationMs = 3500
-)
-{
-    private string css;
 
-    public ToastMessage(string css, string title, string message)
-    {
-        this.css = css;
-        Title = title;
-        Message = message;
-    }
+public class ToastMessage
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Title { get; set; } = "";
+    public string Message { get; set; } = "";
+    public ToastLevel Level { get; set; }
+}
+
+public static class ToastLevelExtensions
+{
+    public static string ToCss(this ToastLevel level)
+        => level == ToastLevel.Success ? "toast-success" : "toast-error";
 }

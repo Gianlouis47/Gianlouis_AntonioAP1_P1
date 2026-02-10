@@ -1,12 +1,16 @@
 ﻿@using Parcial1.Services.Toast
-@inject IToastService Toast
+@inject Parcial1.Services.Toast.IToastService ToastService
 
-<div class="toast-host">
-    @foreach (var t in Toast.Items)
+<div class="toast-stack">
+    @foreach (var toast in ToastService.Items)
     {
-        <div class="toast-item @t.Css">
-            <div class="toast-title">@t.Title</div>
-            <div class="toast-msg">@t.Message</div>
+        <div class="@toast.Level.ToCss()">
+            <div class="toast-body">
+                <strong>@toast.Title</strong>
+                <div>@toast.Message</div>
+            </div>
+
+            <button type="button" class="toast-close" @onclick="() => ToastService.Dismiss(toast.Id)">×</button>
         </div>
     }
 </div>
@@ -14,11 +18,11 @@
 @code {
     protected override void OnInitialized()
     {
-        Toast.OnChange += StateHasChanged;
+        ToastService.OnChange += StateHasChanged;
     }
 
     public void Dispose()
     {
-        Toast.OnChange -= StateHasChanged;
+        ToastService.OnChange -= StateHasChanged;
     }
 }
