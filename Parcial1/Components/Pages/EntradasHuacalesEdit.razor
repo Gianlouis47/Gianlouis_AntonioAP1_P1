@@ -1,9 +1,8 @@
-﻿@using Parcial1.Models
-@page "/entradas-huacales/editar/{IdEntrada:int}"
+@using Parcial1.Models
+@page "/EntradasHuacales/Edit/{IdEntrada:int}"
 @using Parcial1.Services 
 @inject NavigationManager Nav
 @inject Parcial1.Services.EntradasHuacalesServices Service
-
 
 <div class="page-head">
     <div>
@@ -19,29 +18,31 @@
     }
     else
     {
-        <EditForm Model="Model" OnValidSubmit="SaveAsync">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="alert alert-danger">@error</div>
+        }
 
+        <form @onsubmit="SaveAsync">
             <div class="form-grid">
                 <div class="fx">
                     <label class="flabel">Fecha</label>
-                    <InputDate class="form-control finput" @bind-Value="Model.Fecha" />
+                    <input type="date" class="form-control finput" @bind="Model.Fecha" required />
                 </div>
 
                 <div class="fx">
                     <label class="flabel">Cliente</label>
-                    <InputText class="form-control finput" @bind-Value="Model.NombreCliente" />
+                    <input type="text" class="form-control finput" @bind="Model.NombreCliente" required />
                 </div>
 
                 <div class="fx">
                     <label class="flabel">Cantidad</label>
-                    <InputNumber class="form-control finput" @bind-Value="Model.Cantidad" />
+                    <input type="number" class="form-control finput" @bind="Model.Cantidad" required />
                 </div>
 
                 <div class="fx">
                     <label class="flabel">Precio</label>
-                    <InputNumber class="form-control finput" @bind-Value="Model.Precio" />
+                    <input type="number" step="0.01" class="form-control finput" @bind="Model.Precio" required />
                 </div>
             </div>
 
@@ -49,14 +50,15 @@
                 <button class="btn btn-brand" type="submit">Guardar</button>
                 <button class="btn btn-ghost" type="button" @onclick="Back">Cancelar</button>
             </div>
-        </EditForm>
+        </form>
     }
 </div>
 
 @code {
     [Parameter] public int IdEntrada { get; set; }
 
-    private EntradasHuacales Model { get; set; }
+    private EntradaHuacales Model { get; set; }
+    private string error = "";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -65,11 +67,42 @@
 
     private async Task SaveAsync()
     {
-        if (Model is null) return;
+        error = "";
 
-        await Service.UpdateAsync(Model);
-        Nav.NavigateTo("/entradas-huacales");
+        if (Model is null)
+        {
+            error = "No se encontró el registro.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Model.NombreCliente))
+        {
+            error = "El nombre del cliente es requerido.";
+            return;
+        }
+
+        if (Model.Cantidad <= 0)
+        {
+            error = "La cantidad debe ser mayor a 0.";
+            return;
+        }
+
+        if (Model.Precio <= 0)
+        {
+            error = "El precio debe ser mayor a 0.";
+            return;
+        }
+
+        try
+        {
+            await Service.UpdateAsync(Model);
+            Nav.NavigateTo("/EntradasHuacales");
+        }
+        catch (Exception ex)
+        {
+            error = $"Error al guardar: {ex.Message}";
+        }
     }
 
-    private void Back() => Nav.NavigateTo("/entradas-huacales");
+    private void Back() => Nav.NavigateTo("/EntradasHuacales");
 }
