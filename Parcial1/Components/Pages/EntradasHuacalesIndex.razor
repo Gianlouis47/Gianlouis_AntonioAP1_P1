@@ -1,186 +1,112 @@
-﻿@using Parcial1.Models
-@page "/entradas-huacales"
-@using Parcial1.Services
-@inject NavigationManager Nav
-@inject IJSRuntime JS
-@inject Parcial1.Services.EntradasHuacalesService Service
-@inject EntradasHuacalesServices Service
+@page "/EntradaHuacales/Index"
+@page "/EntradasHuacales"
+@layout MainLayout
+@using Parcial1.Models
+@inject Parcial1.Services.EntradasHuacalesServices Service
+@inject NavigationManager Navigation
 
-
-
-
-<div class="page-head">
-    <div>
-        <div class="page-title">Entradas de Huacales</div>
-        <div class="page-subtitle">CRUD + filtros opcionales + totales</div>
+<div class="card mt-4">
+    <div class="card-header">
+        <h2>Registro de Entradas de Huacales</h2>
     </div>
 
-    <button class="btn btn-brand" @onclick="GoCreate">+ Nueva entrada</button>
-</div>
+    <div class="card-body">
 
-<div class="cardx">
-    <div class="filters-grid">
-        <div class="fx">
-            <label class="flabel">Cliente</label>
-            <input class="form-control finput" @bind="Cliente" @bind:event="oninput" placeholder="Buscar cliente..." />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Filtrar por Cliente:</label>
+                <input class="form-control"
+                       @bind="filtroCliente" />
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-outline-primary"
+                        @onclick="Buscar">
+                    Buscar
+                </button>
+            </div>
+
+            <div class="col-md-4 text-end">
+                <a class="btn btn-success" href="/EntradasHuacales/Create">Crear Nuevo</a>
+            </div>
         </div>
 
-        <div class="fx">
-            <label class="flabel">Id</label>
-            <input class="form-control finput" @bind="IdEntradaText" @bind:event="oninput" placeholder="Ej: 10" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Desde</label>
-            <InputDate class="form-control finput" @bind-Value="Desde" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Hasta</label>
-            <InputDate class="form-control finput" @bind-Value="Hasta" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Cantidad Min</label>
-            <input class="form-control finput" @bind="CantidadMinText" @bind:event="oninput" placeholder="Ej: 1" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Cantidad Max</label>
-            <input class="form-control finput" @bind="CantidadMaxText" @bind:event="oninput" placeholder="Ej: 100" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Precio Min</label>
-            <input class="form-control finput" @bind="PrecioMinText" @bind:event="oninput" placeholder="Ej: 10.00" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Precio Max</label>
-            <input class="form-control finput" @bind="PrecioMaxText" @bind:event="oninput" placeholder="Ej: 50.00" />
-        </div>
-    </div>
-
-    <div class="filters-actions">
-        <button class="btn btn-outline-light" @onclick="LoadAsync">Aplicar filtros</button>
-        <button class="btn btn-ghost" @onclick="ClearAsync">Limpiar</button>
-    </div>
-</div>
-
-<div class="cardx table-wrap">
-    <table class="table table-darkx">
-        <thead>
-            <tr>
-                <th style="width:90px;">Id</th>
-                <th style="width:140px;">Fecha</th>
-                <th>Cliente</th>
-                <th style="width:120px;" class="t-right">Cantidad</th>
-                <th style="width:140px;" class="t-right">Precio</th>
-                <th style="width:160px;" class="t-right">Total</th>
-                <th style="width:180px;"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Items.Count == 0)
-            {
+        <table class="table table-bordered">
+            <thead class="table-light">
                 <tr>
-                    <td colspan="7" class="muted">Sin resultados.</td>
+                    <th>IDENTIFICACIÓN</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
                 </tr>
-            }
-            else
-            {
-                @foreach (var it in Items)
+            </thead>
+
+            <tbody>
+                @foreach (var item in lista)
                 {
                     <tr>
-                        <td>@it.IdEntrada</td>
-                        <td>@it.Fecha.ToString("yyyy-MM-dd")</td>
-                        <td>@it.NombreCliente</td>
-                        <td class="t-right">@it.Cantidad</td>
-                        <td class="t-right">@it.Precio.ToString("N2")</td>
-                        <td class="t-right">@it.Total.ToString("N2")</td>
-                        <td class="t-actions">
-                            <button class="btn btn-sm btn-edit" @onclick="() => GoEdit(it.IdEntrada)">Editar</button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteAsync(it.IdEntrada)">Eliminar</button>
+                        <td>@item.IdEntrada</td>
+                        <td>@item.Fecha.ToShortDateString()</td>
+                        <td>@item.NombreCliente</td>
+                        <td>@item.Cantidad</td>
+                        <td>@item.Precio</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary me-2"
+                                    @onclick="() => Editar(item.IdEntrada)">
+                                Editar
+                            </button>
+
+                            <button class="btn btn-sm btn-outline-danger"
+                                    @onclick="() => Eliminar(item.IdEntrada)">
+                                Eliminar
+                            </button>
                         </td>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
 
-<div class="footer-metrics">
-    <div class="metric">
-        <div class="m-label">Conteo</div>
-        <div class="m-value">@Items.Count</div>
-    </div>
+        <hr />
 
-    <div class="metric">
-        <div class="m-label">Total cantidad</div>
-        <div class="m-value">@TotalCantidad</div>
-    </div>
+        <p><strong>Conteo:</strong> @lista.Count</p>
+        <p><strong>Cantidad total:</strong> @lista.Sum(x => x.Cantidad)</p>
 
-    <div class="metric">
-        <div class="m-label">Total monto</div>
-        <div class="m-value">@TotalMonto.ToString("N2")</div>
     </div>
 </div>
 
 @code {
-    private List<EntradasHuacales> Items { get; set; } = new();
 
-    private string? Cliente { get; set; }
-    private string? IdEntradaText { get; set; }
-    private DateTime? Desde { get; set; }
-    private DateTime? Hasta { get; set; }
-    private string? CantidadMinText { get; set; }
-    private string? CantidadMaxText { get; set; }
-    private string? PrecioMinText { get; set; }
-    private string? PrecioMaxText { get; set; }
+    private List<EntradaHuacales> lista = new();
+    private string filtroCliente = "";
 
-    private int TotalCantidad => Items.Sum(x => x.Cantidad);
-    private decimal TotalMonto => Items.Sum(x => x.Total);
-
-    protected override async Task OnInitializedAsync() => await LoadAsync();
-
-    private async Task LoadAsync()
+    protected override async Task OnInitializedAsync()
     {
-        int? id = int.TryParse(IdEntradaText, out var idVal) ? idVal : null;
-        int? cmin = int.TryParse(CantidadMinText, out var cminVal) ? cminVal : null;
-        int? cmax = int.TryParse(CantidadMaxText, out var cmaxVal) ? cmaxVal : null;
-        decimal? pmin = decimal.TryParse(PrecioMinText, out var pminVal) ? pminVal : null;
-        decimal? pmax = decimal.TryParse(PrecioMaxText, out var pmaxVal) ? pmaxVal : null;
-
-       
+        lista = await Service.GetAllAsync();
     }
 
-    private async Task ClearAsync()
+    private async Task Buscar()
     {
-        Cliente = null;
-        IdEntradaText = null;
-        Desde = null;
-        Hasta = null;
-        CantidadMinText = null;
-        CantidadMaxText = null;
-        PrecioMinText = null;
-        PrecioMaxText = null;
-
-        await LoadAsync();
+        lista = await Service.GetAllAsync();
     }
 
-    private void GoCreate() => Nav.NavigateTo("/entradas-huacales/nuevo");
-    private void GoEdit(int id) => Nav.NavigateTo($"/entradas-huacales/editar/{id}");
-
-    private async Task DeleteAsync(int id)
+    private void Crear()
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", $"Delete entry #{id}?");
-        if (!ok) return;
+        Navigation.NavigateTo("/EntradasHuacales/Create");
+    }
 
+    private void Editar(int id)
+    {
+        Navigation.NavigateTo($"/EntradasHuacales/Edit/{id}");
+    }
+
+    private async Task Eliminar(int id)
+    {
         await Service.DeleteAsync(id);
-        await LoadAsync();
+        lista = await Service.GetAllAsync();
     }
 }
-
 
 
         
