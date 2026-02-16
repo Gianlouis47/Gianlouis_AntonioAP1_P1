@@ -1,0 +1,96 @@
+﻿@using Parcial1.Services
+@using Parcial1.Models
+@page "/EntradasHuacales/Create"
+@inject EntradasHuacalesServices Servicio
+@inject NavigationManager Nav
+
+<h3>Crear Entrada de Huacales</h3>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<form @onsubmit="Guardar">
+    <div class="mb-3">
+        <label>Fecha</label>
+        <input type="date" class="form-control" @bind="Model.Fecha" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Nombre Cliente</label>
+        <input type="text" class="form-control" @bind="Model.NombreCliente" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Cantidad</label>
+        <input type="number" class="form-control" @bind="Model.Cantidad" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Precio</label>
+        <input type="number" step="0.01" class="form-control" @bind="Model.Precio" required />
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="/EntradasHuacales" class="btn btn-secondary">Volver</a>
+</form>
+
+@code {
+    private EntradaHuacales Model = new();
+    private string error = "";
+
+    protected override void OnInitialized()
+    {
+        // Inicializar con fecha de hoy
+        Model.Fecha = DateTime.Today;
+    }
+
+    private async Task Guardar()
+    {
+        error = "";
+
+        // Validar campos
+        if (Model.Fecha == DateTime.MinValue || Model.Fecha == default(DateTime))
+        {
+            error = "La fecha es requerida.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(Model.NombreCliente))
+        {
+            error = "El nombre del cliente es requerido.";
+            return;
+        }
+
+        if (Model.Cantidad <= 0)
+        {
+            error = "La cantidad debe ser mayor a 0.";
+            return;
+        }
+
+        if (Model.Precio <= 0)
+        {
+            error = "El precio debe ser mayor a 0.";
+            return;
+        }
+
+        try
+        {
+            Console.WriteLine($"Guardando: Fecha={Model.Fecha}, Cliente={Model.NombreCliente}, Cantidad={Model.Cantidad}, Precio={Model.Precio}");
+            await Servicio.CreateAsync(Model);
+            Console.WriteLine("Guardado exitosamente");
+            Nav.NavigateTo("/EntradasHuacales");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.GetType().Name} - {ex.Message}");
+            error = $"Error al guardar: {ex.Message}";
+        }
+    }
+}
+
+
+    private void Back() => Nav.NavigateTo("/entradas-huacales");
+}
+
