@@ -1,186 +1,258 @@
-﻿@using Parcial1.Models
-@page "/entradas-huacales"
+﻿@page "/EntradasHuacales/Index"
+
+@using Parcial1.Models
 @using Parcial1.Services
-@inject NavigationManager Nav
-@inject IJSRuntime JS
-@inject Parcial1.Services.EntradasHuacalesService Service
-@inject EntradasHuacalesServices Service
 
+@inject EntradasHuacalesService entradasHuacalesService
 
+<div class="container-fluid">
 
+    <div class="card shadow-lg mt-3">
 
-<div class="page-head">
-    <div>
-        <div class="page-title">Entradas de Huacales</div>
-        <div class="page-subtitle">CRUD + filtros opcionales + totales</div>
+        <!-- HEADER -->
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+
+            <h5 class="card-title mb-0">
+                Registro de Entradas de Huacales
+            </h5>
+
+            <a href="/EntradasHuacales/Create"
+               class="btn btn-success">
+                <i class="bi bi-plus-lg"></i>
+                Crear Nuevo
+            </a>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="card-body">
+
+            <!-- FILTROS RESPONSIVE -->
+            <div class="row g-2">
+
+                <div class="col-12 col-md-2">
+                    <InputNumber class="form-control"
+                                 @bind-Value="FiltroId"
+                                 placeholder="Id" />
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <InputText class="form-control"
+                               @bind-Value="FiltroNombre"
+                               placeholder="Cliente" />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <InputNumber class="form-control"
+                                 @bind-Value="FiltroCantidad"
+                                 placeholder="Cantidad" />
+                </div>
+
+                <div class="col-12 col-md-2">
+                    <InputNumber class="form-control"
+                                 @bind-Value="FiltroPrecio"
+                                 placeholder="Precio" />
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <button class="btn btn-primary w-100"
+                            @onclick="Buscar">
+
+                        <i class="bi bi-search"></i>
+                        Buscar
+
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- FECHAS -->
+            <div class="row g-2 mt-2">
+
+                <div class="col-12 col-md-3">
+
+                    <label class="form-label">
+                        Desde
+                    </label>
+
+                    <InputDate class="form-control"
+                               @bind-Value="FechaDesde" />
+
+                </div>
+
+                <div class="col-12 col-md-3">
+
+                    <label class="form-label">
+                        Hasta
+                    </label>
+
+                    <InputDate class="form-control"
+                               @bind-Value="FechaHasta" />
+
+                </div>
+
+            </div>
+
+            <!-- GRID RESPONSIVE -->
+            <div class="table-responsive mt-3">
+
+                <QuickGrid TGridItem="EntradasHuacales"
+                           Items="@ListaQuery"
+                           class="table table-hover table-striped">
+
+                    <PropertyColumn Property="e => e.IdEntrada"
+                                    Title="Id" />
+
+                    <PropertyColumn Property="e => e.Fecha"
+                                    Title="Fecha" />
+
+                    <PropertyColumn Property="e => e.NombreCliente"
+                                    Title="Cliente" />
+
+                    <PropertyColumn Property="e => e.Cantidad"
+                                    Title="Cantidad" />
+
+                    <PropertyColumn Property="e => e.Precio"
+                                    Title="Precio" />
+
+                    <TemplateColumn Title="Acciones">
+
+                        <a class="btn btn-outline-primary btn-sm"
+                           href="@($"/EntradasHuacales/Edit/{context.IdEntrada}")">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </a>
+
+                    </TemplateColumn>
+
+                </QuickGrid>
+
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="card-footer bg-light d-flex justify-content-between">
+
+            <div>
+                <strong>
+                    Cantidad:
+                </strong>
+                @ListaQuery.Count()
+            </div>
+
+            <div>
+                <strong>
+                    Total:
+                </strong>
+                @TotalPrecio.ToString("C")
+            </div>
+
+        </div>
+
     </div>
 
-    <button class="btn btn-brand" @onclick="GoCreate">+ Nueva entrada</button>
 </div>
 
-<div class="cardx">
-    <div class="filters-grid">
-        <div class="fx">
-            <label class="flabel">Cliente</label>
-            <input class="form-control finput" @bind="Cliente" @bind:event="oninput" placeholder="Buscar cliente..." />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Id</label>
-            <input class="form-control finput" @bind="IdEntradaText" @bind:event="oninput" placeholder="Ej: 10" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Desde</label>
-            <InputDate class="form-control finput" @bind-Value="Desde" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Hasta</label>
-            <InputDate class="form-control finput" @bind-Value="Hasta" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Cantidad Min</label>
-            <input class="form-control finput" @bind="CantidadMinText" @bind:event="oninput" placeholder="Ej: 1" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Cantidad Max</label>
-            <input class="form-control finput" @bind="CantidadMaxText" @bind:event="oninput" placeholder="Ej: 100" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Precio Min</label>
-            <input class="form-control finput" @bind="PrecioMinText" @bind:event="oninput" placeholder="Ej: 10.00" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Precio Max</label>
-            <input class="form-control finput" @bind="PrecioMaxText" @bind:event="oninput" placeholder="Ej: 50.00" />
-        </div>
-    </div>
-
-    <div class="filters-actions">
-        <button class="btn btn-outline-light" @onclick="LoadAsync">Aplicar filtros</button>
-        <button class="btn btn-ghost" @onclick="ClearAsync">Limpiar</button>
-    </div>
-</div>
-
-<div class="cardx table-wrap">
-    <table class="table table-darkx">
-        <thead>
-            <tr>
-                <th style="width:90px;">Id</th>
-                <th style="width:140px;">Fecha</th>
-                <th>Cliente</th>
-                <th style="width:120px;" class="t-right">Cantidad</th>
-                <th style="width:140px;" class="t-right">Precio</th>
-                <th style="width:160px;" class="t-right">Total</th>
-                <th style="width:180px;"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Items.Count == 0)
-            {
-                <tr>
-                    <td colspan="7" class="muted">Sin resultados.</td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var it in Items)
-                {
-                    <tr>
-                        <td>@it.IdEntrada</td>
-                        <td>@it.Fecha.ToString("yyyy-MM-dd")</td>
-                        <td>@it.NombreCliente</td>
-                        <td class="t-right">@it.Cantidad</td>
-                        <td class="t-right">@it.Precio.ToString("N2")</td>
-                        <td class="t-right">@it.Total.ToString("N2")</td>
-                        <td class="t-actions">
-                            <button class="btn btn-sm btn-edit" @onclick="() => GoEdit(it.IdEntrada)">Editar</button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteAsync(it.IdEntrada)">Eliminar</button>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-</div>
-
-<div class="footer-metrics">
-    <div class="metric">
-        <div class="m-label">Conteo</div>
-        <div class="m-value">@Items.Count</div>
-    </div>
-
-    <div class="metric">
-        <div class="m-label">Total cantidad</div>
-        <div class="m-value">@TotalCantidad</div>
-    </div>
-
-    <div class="metric">
-        <div class="m-label">Total monto</div>
-        <div class="m-value">@TotalMonto.ToString("N2")</div>
-    </div>
-</div>
 
 @code {
-    private List<EntradasHuacales> Items { get; set; } = new();
 
-    private string? Cliente { get; set; }
-    private string? IdEntradaText { get; set; }
-    private DateTime? Desde { get; set; }
-    private DateTime? Hasta { get; set; }
-    private string? CantidadMinText { get; set; }
-    private string? CantidadMaxText { get; set; }
-    private string? PrecioMinText { get; set; }
-    private string? PrecioMaxText { get; set; }
+    public List<EntradasHuacales> ListaEntradas = new();
 
-    private int TotalCantidad => Items.Sum(x => x.Cantidad);
-    private decimal TotalMonto => Items.Sum(x => x.Total);
+    public IQueryable<EntradasHuacales> ListaQuery =
+        Enumerable.Empty<EntradasHuacales>().AsQueryable();
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    public double TotalPrecio = 0;
 
-    private async Task LoadAsync()
+    public string? FiltroNombre;
+
+    public int? FiltroId;
+
+    public int? FiltroCantidad;
+
+    public double? FiltroPrecio;
+
+    public DateTime? FechaDesde;
+
+    public DateTime? FechaHasta;
+
+
+    protected override async Task OnInitializedAsync()
     {
-        int? id = int.TryParse(IdEntradaText, out var idVal) ? idVal : null;
-        int? cmin = int.TryParse(CantidadMinText, out var cminVal) ? cminVal : null;
-        int? cmax = int.TryParse(CantidadMaxText, out var cmaxVal) ? cmaxVal : null;
-        decimal? pmin = decimal.TryParse(PrecioMinText, out var pminVal) ? pminVal : null;
-        decimal? pmax = decimal.TryParse(PrecioMaxText, out var pmaxVal) ? pmaxVal : null;
+        ListaEntradas =
+            await entradasHuacalesService.Listar(e => true);
 
-       
+        if (ListaEntradas.Any())
+        {
+            FechaDesde =
+                ListaEntradas.Min(e => e.Fecha);
+
+            FechaHasta =
+                ListaEntradas.Max(e => e.Fecha);
+        }
+
+        AplicarFiltro();
     }
 
-    private async Task ClearAsync()
-    {
-        Cliente = null;
-        IdEntradaText = null;
-        Desde = null;
-        Hasta = null;
-        CantidadMinText = null;
-        CantidadMaxText = null;
-        PrecioMinText = null;
-        PrecioMaxText = null;
 
-        await LoadAsync();
+    private void Buscar()
+    {
+        AplicarFiltro();
     }
 
-    private void GoCreate() => Nav.NavigateTo("/entradas-huacales/nuevo");
-    private void GoEdit(int id) => Nav.NavigateTo($"/entradas-huacales/editar/{id}");
 
-    private async Task DeleteAsync(int id)
+    private void AplicarFiltro()
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", $"Delete entry #{id}?");
-        if (!ok) return;
 
-        await Service.DeleteAsync(id);
-        await LoadAsync();
+        var query =
+            ListaEntradas.AsQueryable();
+
+
+        if (FiltroId.HasValue)
+            query =
+                query.Where(e =>
+                    e.IdEntrada == FiltroId.Value);
+
+
+        if (!string.IsNullOrWhiteSpace(FiltroNombre))
+            query =
+                query.Where(e =>
+                    e.NombreCliente.ToLower()
+                    .Contains(FiltroNombre.ToLower()));
+
+
+        if (FiltroCantidad.HasValue)
+            query =
+                query.Where(e =>
+                    e.Cantidad == FiltroCantidad.Value);
+
+
+        if (FiltroPrecio.HasValue)
+            query =
+                query.Where(e =>
+                    e.Precio == FiltroPrecio.Value);
+
+
+        if (FechaDesde.HasValue)
+            query =
+                query.Where(e =>
+                    e.Fecha.Date >= FechaDesde.Value.Date);
+
+
+        if (FechaHasta.HasValue)
+            query =
+                query.Where(e =>
+                    e.Fecha.Date <= FechaHasta.Value.Date);
+
+
+        ListaQuery = query;
+
+
+        TotalPrecio =
+            query.Sum(e =>
+                e.Cantidad * e.Precio);
+
     }
+
 }
-
-
-
-        
