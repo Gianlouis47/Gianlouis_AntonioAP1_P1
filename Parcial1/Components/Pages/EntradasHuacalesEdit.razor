@@ -1,0 +1,75 @@
+﻿@using Parcial1.Models
+@page "/entradas-huacales/editar/{IdEntrada:int}"
+@using Parcial1.Services 
+@inject NavigationManager Nav
+@inject Parcial1.Services.EntradasHuacalesServices Service
+
+
+<div class="page-head">
+    <div>
+        <div class="page-title">Editar entrada</div>
+        <div class="page-subtitle">Actualizar datos</div>
+    </div>
+</div>
+
+<div class="cardx">
+    @if (Model is null)
+    {
+        <div class="muted">Not found.</div>
+    }
+    else
+    {
+        <EditForm Model="Model" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <div class="fx">
+                    <label class="flabel">Fecha</label>
+                    <InputDate class="form-control finput" @bind-Value="Model.Fecha" />
+                </div>
+
+                <div class="fx">
+                    <label class="flabel">Cliente</label>
+                    <InputText class="form-control finput" @bind-Value="Model.NombreCliente" />
+                </div>
+
+                <div class="fx">
+                    <label class="flabel">Cantidad</label>
+                    <InputNumber class="form-control finput" @bind-Value="Model.Cantidad" />
+                </div>
+
+                <div class="fx">
+                    <label class="flabel">Precio</label>
+                    <InputNumber class="form-control finput" @bind-Value="Model.Precio" />
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-brand" type="submit">Guardar</button>
+                <button class="btn btn-ghost" type="button" @onclick="Back">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int IdEntrada { get; set; }
+
+    private EntradasHuacales Model { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Model = await Service.GetByIdAsync(IdEntrada);
+    }
+
+    private async Task SaveAsync()
+    {
+        if (Model is null) return;
+
+        await Service.UpdateAsync(Model);
+        Nav.NavigateTo("/entradas-huacales");
+    }
+
+    private void Back() => Nav.NavigateTo("/entradas-huacales");
+}

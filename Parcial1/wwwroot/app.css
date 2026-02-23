@@ -1,60 +1,213 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+.toast-host {
+    position: fixed;
+    top: 70px;
+    right: 18px;
+    width: 340px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-a, .btn-link {
-    color: #006bb7;
+.toast-item {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 22px rgba(0,0,0,.18);
+    padding: 12px 14px;
+    border-left: 6px solid #2563eb;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+.toast-title {
+    font-weight: 700;
+    margin-bottom: 4px;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.toast-msg {
+    color: #374151;
 }
 
-.content {
-    padding-top: 1.1rem;
+.toast-success {
+    border-left-color: #16a34a;
 }
 
-h1:focus {
-    outline: none;
+.toast-error {
+    border-left-color: #dc2626;
 }
 
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+.toast-info {
+    border-left-color: #2563eb;
+}
 }
 
-.invalid {
-    outline: 1px solid #e50000;
+:root {
+    --bg: #0b1220;
+    --panel: rgba(255,255,255,.06);
+    --panel2: rgba(255,255,255,.08);
+    --stroke: rgba(255,255,255,.10);
+    --text: #e5e7eb;
+    --muted: rgba(229,231,235,.65);
+    --brand1: #6d28d9;
+    --brand2: #ec4899;
 }
 
-.validation-message {
-    color: #e50000;
+body {
+    background: var(--bg);
+    color: var(--text);
 }
 
-.blazor-error-boundary {
-    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
-    padding: 1rem 1rem 1rem 3.7rem;
+a {
+    color: inherit;
+}
+
+.cardx {
+    background: var(--panel);
+    border: 1px solid var(--stroke);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 10px 0 14px;
+}
+
+.page-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .2px;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.fx {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.flabel {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.finput {
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid var(--stroke) !important;
+    color: var(--text) !important;
+    border-radius: 12px !important;
+}
+
+.filters-actions, .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.btn-brand {
+    border: none;
+    background: linear-gradient(90deg, var(--brand1), var(--brand2));
     color: white;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 700;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--stroke);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+
+.table-wrap {
+    padding: 0;
+    overflow: hidden;
+}
+
+.table-darkx {
+    width: 100%;
+    margin: 0;
+    color: var(--text);
+}
+
+    .table-darkx thead th {
+        background: rgba(255,255,255,.06);
+        border-bottom: 1px solid var(--stroke);
+        padding: 12px 14px;
     }
 
-.darker-border-checkbox.form-check-input {
-    border-color: #929292;
+    .table-darkx td {
+        border-top: 1px solid rgba(255,255,255,.06);
+        padding: 12px 14px;
+    }
+
+.t-right {
+    text-align: right;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-    color: var(--bs-secondary-color);
-    text-align: end;
+.t-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-    text-align: start;
+.btn-edit {
+    background: rgba(109,40,217,.18);
+    border: 1px solid rgba(109,40,217,.35);
+    color: #e9d5ff;
+    border-radius: 10px;
+}
+
+.btn-danger {
+    border-radius: 10px;
+}
+
+.footer-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.metric {
+    background: var(--panel2);
+    border: 1px solid var(--stroke);
+    border-radius: 16px;
+    padding: 14px;
+}
+
+.m-label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.m-value {
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 2px;
+}
+
+.muted {
+    color: var(--muted);
 }

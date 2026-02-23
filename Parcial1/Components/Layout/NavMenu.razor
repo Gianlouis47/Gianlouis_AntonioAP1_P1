@@ -1,30 +1,26 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Parcial1</a>
-    </div>
-</div>
+﻿<nav class="nav flex-column mt-2">
+    <NavLink class="nav-link" href="/entradas-huacales" Match="NavLinkMatch.Prefix">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> Entradas Huacales
+    </NavLink>
+</nav>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+<style>
+    .sidebar-link {
+        color: #e8e8e8;
+        border-radius: 10px;
+        padding: 12px 12px;
+        margin: 6px 0;
+        font-weight: 500;
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+        .sidebar-link:hover {
+            color: #fff;
+            background: rgba(255,255,255,.08);
+        }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+        .sidebar-link.active {
+            background: rgba(255,255,255,.22);
+            color: #fff;
+        }
+</style>
