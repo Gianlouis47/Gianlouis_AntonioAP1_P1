@@ -1,21 +1,32 @@
 using Microsoft.EntityFrameworkCore;
 using Parcial1.Components;
 using Parcial1.DAL;
+using Parcial1.Services;
+using BlazorBootstrap;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Razor / Blazor
+// Blazor
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// EF Core (ÚNICA forma correcta para parciales)
-builder.Services.AddDbContext<AppDbContext>(options =>
+// DbContext
+builder.Services.AddDbContext<Contexto>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"))
+        builder.Configuration.GetConnectionString("SqlContStr"))
 );
+
+// Services
+builder.Services.AddScoped<EntradasHuacalesServices>();
+builder.Services.AddScoped<TiposHuacalesServices>();
+builder.Services.AddScoped<DetalleHuacalesServices>();
+
+// BlazorBootstrap
+builder.Services.AddBlazorBootstrap();
 
 var app = builder.Build();
 
+// Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -23,9 +34,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
+app.UseRouting();
+
 app.UseAntiforgery();
 
+//
+// Blazor endpoints
+//
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

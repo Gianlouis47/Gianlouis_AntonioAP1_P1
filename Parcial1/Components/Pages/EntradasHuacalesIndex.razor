@@ -1,186 +1,197 @@
-﻿@using Parcial1.Models
-@page "/entradas-huacales"
+﻿@page "/entradas-huacales"
+
+@using Parcial1.Models
 @using Parcial1.Services
+@using Parcial1.Extensors
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using BlazorBootstrap
+
 @inject NavigationManager Nav
 @inject IJSRuntime JS
-@inject Parcial1.Services.EntradasHuacalesService Service
 @inject EntradasHuacalesServices Service
-
-
-
+@inject ToastService ToastService
 
 <div class="page-head">
+
     <div>
         <div class="page-title">Entradas de Huacales</div>
-        <div class="page-subtitle">CRUD + filtros opcionales + totales</div>
+        <div class="page-subtitle">
+            Registro con detalle
+        </div>
     </div>
 
-    <button class="btn btn-brand" @onclick="GoCreate">+ Nueva entrada</button>
+    <button class="btn btn-brand"
+            @onclick="GoCreate">
+
+        + Nueva entrada
+
+    </button>
+
 </div>
 
-<div class="cardx">
-    <div class="filters-grid">
-        <div class="fx">
-            <label class="flabel">Cliente</label>
-            <input class="form-control finput" @bind="Cliente" @bind:event="oninput" placeholder="Buscar cliente..." />
-        </div>
 
-        <div class="fx">
-            <label class="flabel">Id</label>
-            <input class="form-control finput" @bind="IdEntradaText" @bind:event="oninput" placeholder="Ej: 10" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Desde</label>
-            <InputDate class="form-control finput" @bind-Value="Desde" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Hasta</label>
-            <InputDate class="form-control finput" @bind-Value="Hasta" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Cantidad Min</label>
-            <input class="form-control finput" @bind="CantidadMinText" @bind:event="oninput" placeholder="Ej: 1" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Cantidad Max</label>
-            <input class="form-control finput" @bind="CantidadMaxText" @bind:event="oninput" placeholder="Ej: 100" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Precio Min</label>
-            <input class="form-control finput" @bind="PrecioMinText" @bind:event="oninput" placeholder="Ej: 10.00" />
-        </div>
-
-        <div class="fx">
-            <label class="flabel">Precio Max</label>
-            <input class="form-control finput" @bind="PrecioMaxText" @bind:event="oninput" placeholder="Ej: 50.00" />
-        </div>
-    </div>
-
-    <div class="filters-actions">
-        <button class="btn btn-outline-light" @onclick="LoadAsync">Aplicar filtros</button>
-        <button class="btn btn-ghost" @onclick="ClearAsync">Limpiar</button>
-    </div>
-</div>
 
 <div class="cardx table-wrap">
-    <table class="table table-darkx">
-        <thead>
-            <tr>
-                <th style="width:90px;">Id</th>
-                <th style="width:140px;">Fecha</th>
-                <th>Cliente</th>
-                <th style="width:120px;" class="t-right">Cantidad</th>
-                <th style="width:140px;" class="t-right">Precio</th>
-                <th style="width:160px;" class="t-right">Total</th>
-                <th style="width:180px;"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Items.Count == 0)
-            {
-                <tr>
-                    <td colspan="7" class="muted">Sin resultados.</td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var it in Items)
-                {
-                    <tr>
-                        <td>@it.IdEntrada</td>
-                        <td>@it.Fecha.ToString("yyyy-MM-dd")</td>
-                        <td>@it.NombreCliente</td>
-                        <td class="t-right">@it.Cantidad</td>
-                        <td class="t-right">@it.Precio.ToString("N2")</td>
-                        <td class="t-right">@it.Total.ToString("N2")</td>
-                        <td class="t-actions">
-                            <button class="btn btn-sm btn-edit" @onclick="() => GoEdit(it.IdEntrada)">Editar</button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteAsync(it.IdEntrada)">Eliminar</button>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
+
+    <QuickGrid TGridItem="EntradasHuacales"
+               Items="Items.AsQueryable()"
+               class="table table-darkx">
+
+        <!-- ID -->
+        <PropertyColumn Property="x => x.IdEntrada"
+                        Title="Id"
+                        Sortable="true"
+                        InitialSortDirection="Microsoft.AspNetCore.Components.QuickGrid.SortDirection.Ascending" />
+
+        <!-- FECHA -->
+        <PropertyColumn Property="x => x.Fecha"
+                        Title="Fecha"
+                        Sortable="true" />
+
+        <!-- CLIENTE -->
+        <PropertyColumn Property="x => x.NombreCliente"
+                        Title="Cliente"
+                        Sortable="true" />
+
+        <!-- CANTIDAD -->
+        <PropertyColumn Property="x => x.Cantidad"
+                        Title="Cantidad"
+                        Sortable="true"
+                        Class="t-right" />
+
+        <!-- PRECIO -->
+        <PropertyColumn Property="x => x.Precio"
+                        Title="Precio"
+                        Sortable="true"
+                        Class="t-right" />
+
+        <!-- TOTAL -->
+        <PropertyColumn Property="x => x.Total"
+                        Title="Total"
+                        Sortable="true"
+                        Class="t-right" />
+
+        <!-- DETALLES -->
+        <TemplateColumn Title="Detalles">
+
+            @context.Detalles.Count
+
+        </TemplateColumn>
+
+        <!-- ACCIONES -->
+        <TemplateColumn Title="Acciones">
+
+            <button class="btn btn-sm btn-edit"
+                    @onclick="() => GoEdit(context.IdEntrada)">
+
+                Editar
+
+            </button>
+
+            <button class="btn btn-sm btn-danger"
+                    @onclick="() => DeleteAsync(context.IdEntrada)">
+
+                Eliminar
+
+            </button>
+
+        </TemplateColumn>
+
+    </QuickGrid>
+
 </div>
 
+
+
 <div class="footer-metrics">
+
     <div class="metric">
         <div class="m-label">Conteo</div>
-        <div class="m-value">@Items.Count</div>
+        <div class="m-value">
+            @Items.Count
+        </div>
     </div>
 
     <div class="metric">
         <div class="m-label">Total cantidad</div>
-        <div class="m-value">@TotalCantidad</div>
+        <div class="m-value">
+            @TotalCantidad
+        </div>
     </div>
 
     <div class="metric">
         <div class="m-label">Total monto</div>
-        <div class="m-value">@TotalMonto.ToString("N2")</div>
+        <div class="m-value">
+            @TotalMonto.ToString("N2")
+        </div>
     </div>
+
 </div>
 
+
+
 @code {
-    private List<EntradasHuacales> Items { get; set; } = new();
 
-    private string? Cliente { get; set; }
-    private string? IdEntradaText { get; set; }
-    private DateTime? Desde { get; set; }
-    private DateTime? Hasta { get; set; }
-    private string? CantidadMinText { get; set; }
-    private string? CantidadMaxText { get; set; }
-    private string? PrecioMinText { get; set; }
-    private string? PrecioMaxText { get; set; }
+    private List<EntradasHuacales> Items = new();
 
-    private int TotalCantidad => Items.Sum(x => x.Cantidad);
-    private decimal TotalMonto => Items.Sum(x => x.Total);
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    private int TotalCantidad =>
+        Items.Sum(x => x.Cantidad);
+
+
+    private decimal TotalMonto =>
+        Items.Sum(x => x.Total);
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
 
     private async Task LoadAsync()
     {
-        int? id = int.TryParse(IdEntradaText, out var idVal) ? idVal : null;
-        int? cmin = int.TryParse(CantidadMinText, out var cminVal) ? cminVal : null;
-        int? cmax = int.TryParse(CantidadMaxText, out var cmaxVal) ? cmaxVal : null;
-        decimal? pmin = decimal.TryParse(PrecioMinText, out var pminVal) ? pminVal : null;
-        decimal? pmax = decimal.TryParse(PrecioMaxText, out var pmaxVal) ? pmaxVal : null;
-
-       
+        try
+        {
+            Items = await Service.GetAsync();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
     }
 
-    private async Task ClearAsync()
-    {
-        Cliente = null;
-        IdEntradaText = null;
-        Desde = null;
-        Hasta = null;
-        CantidadMinText = null;
-        CantidadMaxText = null;
-        PrecioMinText = null;
-        PrecioMaxText = null;
 
-        await LoadAsync();
-    }
+    private void GoCreate()
+        => Nav.NavigateTo("/entradas-huacales/nuevo");
 
-    private void GoCreate() => Nav.NavigateTo("/entradas-huacales/nuevo");
-    private void GoEdit(int id) => Nav.NavigateTo($"/entradas-huacales/editar/{id}");
+
+    private void GoEdit(int id)
+        => Nav.NavigateTo($"/entradas-huacales/editar/{id}");
+
 
     private async Task DeleteAsync(int id)
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", $"Delete entry #{id}?");
-        if (!ok) return;
+        var ok = await JS.InvokeAsync<bool>(
+            "confirm",
+            $"Eliminar entrada #{id}?"
+        );
 
-        await Service.DeleteAsync(id);
-        await LoadAsync();
+        if (!ok)
+            return;
+
+        try
+        {
+            await Service.DeleteAsync(id);
+
+            ToastService.ShowSuccess("Registro eliminado");
+
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            ToastService.ShowError(ex.Message);
+        }
     }
+
 }
-
-
-
-        

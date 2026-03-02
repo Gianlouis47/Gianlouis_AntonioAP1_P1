@@ -14,7 +14,7 @@ public class ContextoFactory : IDesignTimeDbContextFactory<Contexto>
         .AddJsonFile("appsettings.json", optional: false)
         .Build();
 
-        var connectionString = configuration.GetConnectionString("SqlServer");
+        var connectionString = configuration.GetConnectionString("SqlContStr");
 
         var optionsBuilder = new DbContextOptionsBuilder<Contexto>();
 

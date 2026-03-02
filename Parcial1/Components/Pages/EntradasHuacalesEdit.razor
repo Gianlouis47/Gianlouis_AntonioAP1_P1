@@ -1,75 +1,348 @@
-﻿@using Parcial1.Models
-@page "/entradas-huacales/editar/{IdEntrada:int}"
-@using Parcial1.Services 
-@inject NavigationManager Nav
-@inject Parcial1.Services.EntradasHuacalesServices Service
+﻿@page "/entradas-huacales/editar/{IdEntrada:int}"
 
+@using Parcial1.Models
+@using Parcial1.Services
+@using Parcial1.Extensors
+@using BlazorBootstrap
+
+@inject NavigationManager Nav
+@inject EntradasHuacalesServices Service
+@inject TiposHuacalesServices TiposService
+@inject ToastService toastService
+
+<PageTitle>Editar Entrada</PageTitle>
 
 <div class="page-head">
+
     <div>
         <div class="page-title">Editar entrada</div>
-        <div class="page-subtitle">Actualizar datos</div>
+        <div class="page-subtitle">
+            Modificar entrada y detalles
+        </div>
     </div>
+
 </div>
 
-<div class="cardx">
-    @if (Model is null)
-    {
-        <div class="muted">Not found.</div>
-    }
-    else
-    {
-        <EditForm Model="Model" OnValidSubmit="SaveAsync">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+
+@if (Model == null)
+{
+    <div class="cardx">
+        <div class="muted">
+            Entrada no encontrada.
+        </div>
+    </div>
+}
+else
+{
+
+    <EditForm Model="Model" OnValidSubmit="SaveAsync">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+
+        <!-- DATOS GENERALES -->
+        <div class="cardx">
 
             <div class="form-grid">
+
                 <div class="fx">
                     <label class="flabel">Fecha</label>
-                    <InputDate class="form-control finput" @bind-Value="Model.Fecha" />
+
+                    <InputDate class="form-control finput"
+                               @bind-Value="Model.Fecha" />
                 </div>
+
 
                 <div class="fx">
                     <label class="flabel">Cliente</label>
-                    <InputText class="form-control finput" @bind-Value="Model.NombreCliente" />
+
+                    <InputText class="form-control finput"
+                               @bind-Value="Model.NombreCliente" />
                 </div>
+
 
                 <div class="fx">
-                    <label class="flabel">Cantidad</label>
-                    <InputNumber class="form-control finput" @bind-Value="Model.Cantidad" />
+                    <label class="flabel">Cantidad total</label>
+
+                    <InputNumber class="form-control finput"
+                                 @bind-Value="Model.Cantidad" />
                 </div>
+
 
                 <div class="fx">
-                    <label class="flabel">Precio</label>
-                    <InputNumber class="form-control finput" @bind-Value="Model.Precio" />
+                    <label class="flabel">Precio base</label>
+
+                    <InputNumber class="form-control finput"
+                                 @bind-Value="Model.Precio" />
                 </div>
+
             </div>
 
-            <div class="form-actions">
-                <button class="btn btn-brand" type="submit">Guardar</button>
-                <button class="btn btn-ghost" type="button" @onclick="Back">Cancelar</button>
+        </div>
+
+
+
+        <!-- DETALLES -->
+        <div class="cardx mt-3">
+
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+
+                <div class="page-title">
+                    Detalles de huacales
+                </div>
+
+
+                <!-- TriggerSelection -->
+                <button type="button"
+                        class="btn btn-brand"
+                        @onclick="AddDetalle">
+
+                    + Agregar detalle
+
+                </button>
+
             </div>
-        </EditForm>
-    }
-</div>
+
+
+
+            <table class="table table-darkx">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:40%">
+                            Tipo de huacal
+                        </th>
+
+                        <th style="width:20%">
+                            Cantidad
+                        </th>
+
+                        <th style="width:20%">
+                            Existencia actual
+                        </th>
+
+                        <th style="width:20%"></th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @if (Model.Detalles.Count == 0)
+                    {
+                        <tr>
+
+                            <td colspan="4"
+                                class="muted">
+
+                                No hay detalles agregados.
+
+                            </td>
+
+                        </tr>
+                    }
+
+
+                    @foreach (var detalle in Model.Detalles)
+                    {
+                        var tipo =
+                        Tipos.FirstOrDefault(
+                        t => t.TipoId == detalle.TipoId);
+
+
+                        <tr>
+
+
+                            <!-- InputSelect -->
+                            <td>
+
+                                <InputSelect class="form-control"
+                                             @bind-Value="detalle.TipoId">
+
+                                    <option value="0">
+                                        Seleccione tipo
+                                    </option>
+
+                                    @foreach (var t in Tipos)
+                                    {
+                                        <option value="@t.TipoId">
+
+                                            @t.Descripcion
+
+                                        </option>
+                                    }
+
+                                </InputSelect>
+
+                            </td>
+
+
+
+                            <!-- Cantidad -->
+                            <td>
+
+                                <InputNumber class="form-control"
+                                             @bind-Value="detalle.Cantidad" />
+
+                            </td>
+
+
+
+                            <!-- Existencia -->
+                            <td>
+
+                                @if (tipo != null)
+                                {
+                                    <span class="badge bg-info">
+
+                                        @tipo.Existencia
+
+                                    </span>
+                                }
+
+                            </td>
+
+
+
+                            <!-- Eliminar -->
+                            <td>
+
+                                <button type="button"
+                                        class="btn btn-danger btn-sm"
+                                        @onclick="() => RemoveDetalle(detalle)">
+
+                                    Eliminar
+
+                                </button>
+
+                            </td>
+
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- BOTONES -->
+        <div class="form-actions mt-3">
+
+            <button class="btn btn-brand"
+                    type="submit">
+
+                Guardar
+
+            </button>
+
+
+            <button type="button"
+                    class="btn btn-ghost"
+                    @onclick="Back">
+
+                Cancelar
+
+            </button>
+
+        </div>
+
+
+    </EditForm>
+
+}
+
 
 @code {
-    [Parameter] public int IdEntrada { get; set; }
 
-    private EntradasHuacales Model { get; set; }
+    [Parameter]
+    public int IdEntrada { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+
+    private EntradasHuacales Model;
+
+
+    private List<TiposHuacales> Tipos = new();
+
+
+
+    protected override async Task OnInitializedAsync()
     {
-        Model = await Service.GetByIdAsync(IdEntrada);
+        Tipos =
+        await TiposService.GetAsync();
+
+
+        Model =
+        await Service.GetByIdAsync(IdEntrada);
+
+
+        if (Model == null)
+            return;
+
+
+        if (Model.Detalles == null)
+            Model.Detalles =
+            new List<DetalleHuacales>();
     }
+
+
+
+    // TriggerSelection
+    private void AddDetalle()
+    {
+        Model.Detalles.Add(
+            new DetalleHuacales
+            {
+                TipoId = 0,
+                Cantidad = 1,
+                Precio = Model.Precio
+            });
+    }
+
+
+
+    private void RemoveDetalle(
+        DetalleHuacales detalle)
+    {
+        Model.Detalles.Remove(detalle);
+    }
+
+
 
     private async Task SaveAsync()
     {
-        if (Model is null) return;
+        try
+        {
+            await Service.UpdateAsync(Model);
 
-        await Service.UpdateAsync(Model);
-        Nav.NavigateTo("/entradas-huacales");
+            toastService.ShowSuccess(
+                "Entrada actualizada correctamente");
+
+            Nav.NavigateTo(
+                "/entradas-huacales");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(
+                ex.Message);
+        }
     }
 
-    private void Back() => Nav.NavigateTo("/entradas-huacales");
+
+
+    private void Back()
+    {
+        Nav.NavigateTo(
+            "/entradas-huacales");
+    }
+
 }
