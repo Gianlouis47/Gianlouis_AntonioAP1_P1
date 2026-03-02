@@ -1,31 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Parcial1.Migrations
 {
     /// <inheritdoc />
-    public partial class DetalleHuacalesV2 : Migration
+    public partial class AddColorToTipo : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<decimal>(
-                name: "Precio",
-                table: "EntradasHuacales",
-                type: "decimal(18,2)",
-                nullable: false,
-                oldClrType: typeof(double),
-                oldType: "float");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "NombreCliente",
-                table: "EntradasHuacales",
-                type: "nvarchar(100)",
-                maxLength: 100,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+            migrationBuilder.CreateTable(
+                name: "EntradasHuacales",
+                columns: table => new
+                {
+                    IdEntrada = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NombreCliente = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Cantidad = table.Column<int>(type: "int", nullable: false),
+                    Precio = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EntradasHuacales", x => x.IdEntrada);
+                });
 
             migrationBuilder.CreateTable(
                 name: "TiposHuacales",
@@ -34,7 +34,8 @@ namespace Parcial1.Migrations
                     TipoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Descripcion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Existencia = table.Column<int>(type: "int", nullable: false)
+                    Existencia = table.Column<int>(type: "int", nullable: false),
+                    ColorHex = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -87,24 +88,10 @@ namespace Parcial1.Migrations
                 name: "DetalleHuacales");
 
             migrationBuilder.DropTable(
+                name: "EntradasHuacales");
+
+            migrationBuilder.DropTable(
                 name: "TiposHuacales");
-
-            migrationBuilder.AlterColumn<double>(
-                name: "Precio",
-                table: "EntradasHuacales",
-                type: "float",
-                nullable: false,
-                oldClrType: typeof(decimal),
-                oldType: "decimal(18,2)");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "NombreCliente",
-                table: "EntradasHuacales",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(100)",
-                oldMaxLength: 100);
         }
     }
 }

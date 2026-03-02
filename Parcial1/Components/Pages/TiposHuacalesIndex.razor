@@ -1,0 +1,109 @@
+﻿@page "/tipos-huacales"
+
+@using Parcial1.Models
+@using Parcial1.Services
+@using Parcial1.Extensors
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using BlazorBootstrap
+
+@inject TiposHuacalesServices Service
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject ToastService toastService
+
+<PageTitle>Tipos Huacales</PageTitle>
+
+<div class="page-head">
+    <div>
+        <div class="page-title">Tipos de Huacales</div>
+        <div class="page-subtitle">Administración de tipos</div>
+    </div>
+
+    <button class="btn btn-brand"
+            @onclick="GoCreate">
+        + Nuevo Tipo
+    </button>
+</div>
+
+<div class="cardx table-wrap">
+
+    <QuickGrid TGridItem="TiposHuacales"
+               Items="Items.AsQueryable()"
+               class="table table-darkx">
+
+        <PropertyColumn Property="x => x.TipoId"
+                        Title="Id"
+                        Sortable="true" />
+
+        <PropertyColumn Property="x => x.Descripcion"
+                        Title="Descripción"
+                        Sortable="true" />
+
+        <PropertyColumn Property="x => x.Existencia"
+                        Title="Existencia"
+                        Sortable="true"
+                        Class="t-right" />
+
+        <TemplateColumn Title="Acciones">
+
+            <button class="btn btn-sm btn-edit"
+                    @onclick="() => GoEdit(context.TipoId)">
+                Editar
+            </button>
+
+            <button class="btn btn-sm btn-danger"
+                    @onclick="() => Delete(context.TipoId)">
+                Eliminar
+            </button>
+
+        </TemplateColumn>
+
+    </QuickGrid>
+
+</div>
+
+<div class="footer-metrics">
+    <div class="metric">
+        <div class="m-label">Total Tipos</div>
+        <div class="m-value">@Items.Count</div>
+    </div>
+</div>
+
+@code {
+
+    private List<TiposHuacales> Items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        Items = await Service.GetAsync();
+    }
+
+    private void GoCreate()
+        => Nav.NavigateTo("/tipos-huacales/nuevo");
+
+    private void GoEdit(int id)
+        => Nav.NavigateTo($"/tipos-huacales/editar/{id}");
+
+    private async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>(
+            "confirm",
+            "¿Eliminar este tipo?"
+        );
+
+        if (!ok)
+            return;
+
+        await Service.DeleteAsync(id);
+
+        toastService.ShowSuccess("Tipo eliminado");
+
+        await Load();
+    }
+
+}

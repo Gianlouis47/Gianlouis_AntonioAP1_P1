@@ -1,0 +1,86 @@
+﻿@page "/tipos-huacales/editar/{TipoId:int}"
+
+@using Parcial1.Models
+@using Parcial1.Services
+@using Parcial1.Extensors
+@using BlazorBootstrap
+
+@inject TiposHuacalesServices Service
+@inject NavigationManager Nav
+@inject ToastService toastService
+
+<PageTitle>Editar Tipo</PageTitle>
+
+<div class="page-head">
+    <div>
+        <div class="page-title">Editar tipo</div>
+        <div class="page-subtitle">Actualizar descripción y existencia</div>
+    </div>
+</div>
+
+<div class="cardx">
+    @if (Model is null)
+    {
+        <div class="muted">Tipo no encontrado.</div>
+    }
+    else
+    {
+        <EditForm Model="Model" OnValidSubmit="SaveAsync">
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+
+                <div class="fx">
+                    <label class="flabel">Descripción</label>
+                    <InputText class="form-control finput"
+                               @bind-Value="Model.Descripcion" />
+                </div>
+
+                <div class="fx">
+                    <label class="flabel">Existencia</label>
+                    <InputNumber class="form-control finput"
+                                 @bind-Value="Model.Existencia" />
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-brand" type="submit">Guardar</button>
+
+                <button type="button"
+                        class="btn btn-ghost"
+                        @onclick="Back">
+                    Cancelar
+                </button>
+            </div>
+
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int TipoId { get; set; }
+
+    private TiposHuacales? Model;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Model = await Service.GetByIdAsync(TipoId);
+    }
+
+    private async Task SaveAsync()
+    {
+        if (Model is null) return;
+
+        await Service.UpdateAsync(Model);
+
+        toastService.ShowSuccess("Tipo actualizado");
+
+        Nav.NavigateTo("/tipos-huacales");
+    }
+
+    private void Back()
+        => Nav.NavigateTo("/tipos-huacales");
+}

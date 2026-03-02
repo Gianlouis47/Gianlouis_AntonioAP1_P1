@@ -12,23 +12,12 @@
 
 <PageTitle>Editar Entrada</PageTitle>
 
-<div class="page-head">
-
-    <div>
-        <div class="page-title">Editar entrada</div>
-        <div class="page-subtitle">
-            Modificar entrada y detalles
-        </div>
-    </div>
-
-</div>
-
 
 @if (Model == null)
 {
     <div class="cardx">
         <div class="muted">
-            Entrada no encontrada.
+            Entrada no encontrada
         </div>
     </div>
 }
@@ -47,33 +36,26 @@ else
             <div class="form-grid">
 
                 <div class="fx">
-                    <label class="flabel">Fecha</label>
-
-                    <InputDate class="form-control finput"
+                    <label>Fecha</label>
+                    <InputDate class="form-control"
                                @bind-Value="Model.Fecha" />
                 </div>
 
-
                 <div class="fx">
-                    <label class="flabel">Cliente</label>
-
-                    <InputText class="form-control finput"
+                    <label>Cliente</label>
+                    <InputText class="form-control"
                                @bind-Value="Model.NombreCliente" />
                 </div>
 
-
                 <div class="fx">
-                    <label class="flabel">Cantidad total</label>
-
-                    <InputNumber class="form-control finput"
+                    <label>Cantidad total</label>
+                    <InputNumber class="form-control"
                                  @bind-Value="Model.Cantidad" />
                 </div>
 
-
                 <div class="fx">
-                    <label class="flabel">Precio base</label>
-
-                    <InputNumber class="form-control finput"
+                    <label>Precio base</label>
+                    <InputNumber class="form-control"
                                  @bind-Value="Model.Precio" />
                 </div>
 
@@ -82,84 +64,121 @@ else
         </div>
 
 
-
         <!-- DETALLES -->
         <div class="cardx mt-3">
 
-
             <div class="d-flex justify-content-between align-items-center mb-2">
 
-                <div class="page-title">
-                    Detalles de huacales
+                <h5>Detalles</h5>
+
+                <div>
+
+                    <!-- TriggerSelection -->
+                    <button type="button"
+                            class="btn btn-brand"
+                            @onclick="AddDetalle">
+
+                        + Agregar detalle
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-light ms-2"
+                            @onclick="ToggleCrearTipo">
+
+                        + Nuevo tipo
+
+                    </button>
+
                 </div>
-
-
-                <!-- TriggerSelection -->
-                <button type="button"
-                        class="btn btn-brand"
-                        @onclick="AddDetalle">
-
-                    + Agregar detalle
-
-                </button>
 
             </div>
 
 
+            <!-- CREAR TIPO -->
+            @if (MostrarCrearTipo)
+            {
+                <div class="cardx mb-3">
 
+                    <div class="form-grid">
+
+                        <div class="fx">
+                            <label>Descripción</label>
+                            <InputText class="form-control"
+                                       @bind-Value="NuevoTipo.Descripcion" />
+                        </div>
+
+                        <div class="fx">
+                            <label>Existencia</label>
+                            <InputNumber class="form-control"
+                                         @bind-Value="NuevoTipo.Existencia" />
+                        </div>
+
+                        <div class="fx">
+                            <label>Color HEX</label>
+                            <InputText class="form-control"
+                                       placeholder="#ff0000"
+                                       @bind-Value="NuevoTipo.ColorHex" />
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions mt-2">
+
+                        <button type="button"
+                                class="btn btn-success"
+                                @onclick="CrearTipoAsync">
+
+                            Guardar tipo
+
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                @onclick="CancelarTipo">
+
+                            Cancelar
+
+                        </button>
+
+                    </div>
+
+                </div>
+            }
+
+
+            <!-- TABLA -->
             <table class="table table-darkx">
 
                 <thead>
 
                     <tr>
-
-                        <th style="width:40%">
-                            Tipo de huacal
-                        </th>
-
-                        <th style="width:20%">
-                            Cantidad
-                        </th>
-
-                        <th style="width:20%">
-                            Existencia actual
-                        </th>
-
-                        <th style="width:20%"></th>
-
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Existencia</th>
+                        <th>Color</th>
+                        <th></th>
                     </tr>
 
                 </thead>
 
-
                 <tbody>
 
-                    @if (Model.Detalles.Count == 0)
+                    @if (!Model.Detalles.Any())
                     {
                         <tr>
-
-                            <td colspan="4"
-                                class="muted">
-
-                                No hay detalles agregados.
-
+                            <td colspan="5" class="muted">
+                                No hay detalles
                             </td>
-
                         </tr>
                     }
 
-
                     @foreach (var detalle in Model.Detalles)
                     {
-                        var tipo =
-                        Tipos.FirstOrDefault(
-                        t => t.TipoId == detalle.TipoId);
-
+                        var tipo = Tipos.FirstOrDefault(x => x.TipoId == detalle.TipoId);
 
                         <tr>
 
-
-                            <!-- InputSelect -->
                             <td>
 
                                 <InputSelect class="form-control"
@@ -172,9 +191,7 @@ else
                                     @foreach (var t in Tipos)
                                     {
                                         <option value="@t.TipoId">
-
                                             @t.Descripcion
-
                                         </option>
                                     }
 
@@ -182,9 +199,6 @@ else
 
                             </td>
 
-
-
-                            <!-- Cantidad -->
                             <td>
 
                                 <InputNumber class="form-control"
@@ -192,25 +206,32 @@ else
 
                             </td>
 
-
-
-                            <!-- Existencia -->
                             <td>
 
                                 @if (tipo != null)
                                 {
                                     <span class="badge bg-info">
-
                                         @tipo.Existencia
-
                                     </span>
                                 }
 
                             </td>
 
+                            <td>
 
+                                @if (tipo != null)
+                                {
+                                    <span style="
+                                        display:inline-block;
+                                        width:20px;
+                                        height:20px;
+                                        border-radius:4px;
+                                        background:@tipo.ColorHex;">
+                                    </span>
+                                }
 
-                            <!-- Eliminar -->
+                            </td>
+
                             <td>
 
                                 <button type="button"
@@ -223,7 +244,6 @@ else
 
                             </td>
 
-
                         </tr>
                     }
 
@@ -234,20 +254,18 @@ else
         </div>
 
 
-
         <!-- BOTONES -->
         <div class="form-actions mt-3">
 
-            <button class="btn btn-brand"
-                    type="submit">
+            <button type="submit"
+                    class="btn btn-primary">
 
-                Guardar
+                Guardar cambios
 
             </button>
 
-
             <button type="button"
-                    class="btn btn-ghost"
+                    class="btn btn-secondary"
                     @onclick="Back">
 
                 Cancelar
@@ -255,7 +273,6 @@ else
             </button>
 
         </div>
-
 
     </EditForm>
 
@@ -268,81 +285,107 @@ else
     public int IdEntrada { get; set; }
 
 
-    private EntradasHuacales Model;
-
+    private EntradasHuacales? Model;
 
     private List<TiposHuacales> Tipos = new();
 
+    private TiposHuacales NuevoTipo = new();
+
+    private bool MostrarCrearTipo = false;
 
 
     protected override async Task OnInitializedAsync()
     {
-        Tipos =
-        await TiposService.GetAsync();
+        await CargarTipos();
 
-
-        Model =
-        await Service.GetByIdAsync(IdEntrada);
-
+        Model = await Service.GetByIdAsync(IdEntrada);
 
         if (Model == null)
             return;
 
-
         if (Model.Detalles == null)
-            Model.Detalles =
-            new List<DetalleHuacales>();
+            Model.Detalles = new List<DetalleHuacales>();
     }
 
 
+    private async Task CargarTipos()
+    {
+        Tipos = await TiposService.GetAsync();
+        StateHasChanged();
+    }
 
-    // TriggerSelection
+
     private void AddDetalle()
     {
-        Model.Detalles.Add(
-            new DetalleHuacales
-            {
-                TipoId = 0,
-                Cantidad = 1,
-                Precio = Model.Precio
-            });
+        Model?.Detalles.Add(new DetalleHuacales
+        {
+            TipoId = 0,
+            Cantidad = 1,
+            Precio = Model.Precio
+        });
     }
 
 
-
-    private void RemoveDetalle(
-        DetalleHuacales detalle)
+    private void RemoveDetalle(DetalleHuacales detalle)
     {
-        Model.Detalles.Remove(detalle);
+        Model?.Detalles.Remove(detalle);
     }
-
 
 
     private async Task SaveAsync()
     {
         try
         {
-            await Service.UpdateAsync(Model);
+            await Service.UpdateAsync(Model!);
 
-            toastService.ShowSuccess(
-                "Entrada actualizada correctamente");
+            toastService.ShowSuccess("Entrada actualizada correctamente");
 
-            Nav.NavigateTo(
-                "/entradas-huacales");
+            Nav.NavigateTo("/entradas-huacales");
         }
         catch (Exception ex)
         {
-            toastService.ShowError(
-                ex.Message);
+            toastService.ShowError(ex.Message);
         }
     }
 
 
+    private void ToggleCrearTipo()
+    {
+        MostrarCrearTipo = !MostrarCrearTipo;
+    }
+
+
+    private async Task CrearTipoAsync()
+    {
+        try
+        {
+            await TiposService.CreateAsync(NuevoTipo);
+
+            NuevoTipo = new();
+
+            MostrarCrearTipo = false;
+
+            await CargarTipos();
+
+            toastService.ShowSuccess("Tipo creado correctamente");
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+    }
+
+
+    private void CancelarTipo()
+    {
+        MostrarCrearTipo = false;
+        NuevoTipo = new();
+    }
+
 
     private void Back()
     {
-        Nav.NavigateTo(
-            "/entradas-huacales");
+        Nav.NavigateTo("/entradas-huacales");
     }
 
 }

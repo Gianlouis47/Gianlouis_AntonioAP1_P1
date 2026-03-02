@@ -1,0 +1,70 @@
+﻿@page "/tipos-huacales/nuevo"
+
+@using Parcial1.Models
+@using Parcial1.Services
+@using Parcial1.Extensors
+@using BlazorBootstrap
+
+@inject TiposHuacalesServices Service
+@inject NavigationManager Nav
+@inject ToastService toastService
+
+<PageTitle>Nuevo Tipo</PageTitle>
+
+<div class="page-head">
+    <div>
+        <div class="page-title">Nuevo tipo</div>
+        <div class="page-subtitle">Crear tipo de huacal</div>
+    </div>
+</div>
+
+<EditForm Model="Model" OnValidSubmit="Save">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="cardx">
+        <div class="form-grid">
+
+            <div class="fx">
+                <label class="flabel">Descripción</label>
+                <InputText class="form-control finput"
+                           @bind-Value="Model.Descripcion" />
+            </div>
+
+            <div class="fx">
+                <label class="flabel">Existencia</label>
+                <InputNumber class="form-control finput"
+                             @bind-Value="Model.Existencia" />
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn-brand" type="submit">Guardar</button>
+
+        <button type="button"
+                class="btn btn-ghost"
+                @onclick="Back">
+            Cancelar
+        </button>
+    </div>
+
+</EditForm>
+
+@code {
+    private TiposHuacales Model = new();
+
+    private async Task Save()
+    {
+        await Service.CreateAsync(Model);
+
+        toastService.ShowSuccess("Tipo creado");
+
+        Nav.NavigateTo("/tipos-huacales");
+    }
+
+    private void Back()
+        => Nav.NavigateTo("/tipos-huacales");
+}

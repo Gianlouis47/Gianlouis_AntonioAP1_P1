@@ -5,7 +5,7 @@
 namespace Parcial1.Migrations
 {
     /// <inheritdoc />
-    public partial class MejoraHuacales : Migration
+    public partial class AddColorHexToTipos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

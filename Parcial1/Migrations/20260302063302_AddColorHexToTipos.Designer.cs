@@ -12,8 +12,8 @@ using Parcial1.DAL;
 namespace Parcial1.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20260302025702_DetalleHuacalesV2")]
-    partial class DetalleHuacalesV2
+    [Migration("20260302063302_AddColorHexToTipos")]
+    partial class AddColorHexToTipos
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,6 +40,7 @@ namespace Parcial1.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Precio")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("TipoId")
@@ -74,6 +75,7 @@ namespace Parcial1.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Precio")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("IdEntrada");
@@ -88,6 +90,10 @@ namespace Parcial1.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TipoId"));
+
+                    b.Property<string>("ColorHex")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Descripcion")
                         .IsRequired()

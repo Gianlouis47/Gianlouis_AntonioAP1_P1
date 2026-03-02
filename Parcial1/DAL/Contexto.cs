@@ -16,6 +16,15 @@ public class Contexto(DbContextOptions<Contexto> options) : DbContext(options)
     {
         base.OnModelCreating(modelBuilder);
 
+        // Configurar precisión de propiedades decimal
+        modelBuilder.Entity<EntradasHuacales>()
+            .Property(x => x.Precio)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<DetalleHuacales>()
+            .Property(x => x.Precio)
+            .HasPrecision(18, 2);
+
         // Relación: Entrada -> Detalles (1 a muchos)
         modelBuilder.Entity<DetalleHuacales>()
             .HasOne(d => d.Entrada)
